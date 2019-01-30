@@ -14,7 +14,7 @@ WORKDIR /root/library
 RUN python setup.py install
 
 WORKDIR /root/
-COPY examples	examples
-WORKDIR /root/examples/
+COPY scripts	scripts
+WORKDIR /root/scripts
 
-CMD ["python", "larson.py"]
+CMD ["python", "cpu_info.py"]
