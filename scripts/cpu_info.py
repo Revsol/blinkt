@@ -1,11 +1,13 @@
 #!/usr/bin/env python
 
 import time
+import psutil
 from subprocess import PIPE, Popen
 
 import blinkt
 
 blinkt.set_clear_on_exit()
+blinkt.set_brightness(0.05)
 
 
 def get_cpu_temperature():
@@ -21,23 +23,27 @@ def get_cpu_temperature():
     return temp
 
 
-def show_graph(v, r, g, b):
-    v *= blinkt.NUM_PIXELS
+def show_graph(temp, load):
+    # print('temp: ' + `temp`)
+    # print('load: ' + `load`)
+    temp *= blinkt.NUM_PIXELS
+    load *= blinkt.NUM_PIXELS
     for x in range(blinkt.NUM_PIXELS):
-        if v < 0:
-            r, g, b = 0, 0, 0
-        else:
-            r, g, b = [int(min(v, 1.0) * c) for c in [r, g, b]]
+        r, g, b = 0, 0, 0
+        if temp > 0:
+            r = 255
+        if load > 0:
+            b = 255
 
         blinkt.set_pixel(x, r, g, b)
-        v -= 1
+        temp -= 1
+        load -= 1
 
     blinkt.show()
 
 
-blinkt.set_brightness(0.1)
-
 while True:
-    v = get_cpu_temperature() / 100.0
-    show_graph(v, 255, 255, 255)
-    time.sleep(0.01)
+    temp = get_cpu_temperature() / 100
+    load = psutil.cpu_percent() / 100.0
+    show_graph(temp, load)
+    time.sleep(0.05)
