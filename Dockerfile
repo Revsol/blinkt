@@ -1,8 +1,15 @@
 FROM resin/rpi-raspbian:jessie
 
-RUN apt-get update -qy && apt-get install -qy \
+RUN apt-get update -qy && apt-get install -y \
     python \
     python-rpi.gpio
+	
+
+RUN apt-get install -y libraspberrypi-bin
+
+RUN apt-get install -y gcc python-dev python-pip
+
+RUN pip install psutil
 
 # Cancel out any Entrypoint already set in the base image.
 ENTRYPOINT []	
