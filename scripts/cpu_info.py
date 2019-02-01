@@ -1,10 +1,14 @@
 #!/usr/bin/env python
 
+import os
 import time
 import psutil
 from subprocess import PIPE, Popen
-
 import blinkt
+
+mode = os.environ['Mode']
+if mode not in ['Mixed', 'Temp', 'Load']:
+    raise ValueError('Mode not recognized.')
 
 blinkt.set_clear_on_exit()
 blinkt.set_brightness(0.05)
@@ -24,8 +28,6 @@ def get_cpu_temperature():
 
 
 def show_graph(temp, load):
-    # print('temp: ' + `temp`)
-    # print('load: ' + `load`)
     temp *= blinkt.NUM_PIXELS
     load *= blinkt.NUM_PIXELS
     for x in range(blinkt.NUM_PIXELS):
@@ -43,7 +45,11 @@ def show_graph(temp, load):
 
 
 while True:
-    temp = get_cpu_temperature() / 100
-    load = psutil.cpu_percent() / 100.0
+    temp = 0
+    load = 0
+    if mode in ['Mixed', 'Temp']:
+        temp = get_cpu_temperature() / 100
+    if mode in ['Mixed', 'Load']:
+        load = psutil.cpu_percent() / 100.0
     show_graph(temp, load)
     time.sleep(0.05)
